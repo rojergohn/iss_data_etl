@@ -45,3 +45,14 @@ Before running this project, ensure that the following are installed and configu
 ```bash
 git clone https://github.com/yourusername/iss_data_etl.git
 cd iss_data_etl
+
+### Step 2: Set Up the Virtual Environment (Optional)
+
+It's a good practice to run your projects in a virtual environment to manage dependencies and isolate project-specific packages.
+
+1. **Create a Virtual Environment**
+
+   Run the following command to create a new virtual environment in the directory `~/python_vi`:
+
+   ```bash
+   python3 -m venv ~/python_vi
