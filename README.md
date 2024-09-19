@@ -1,58 +1,49 @@
-# ISS Data ETL Project
+## Project Description
 
-## Overview
+The ISS Data ETL Project is a comprehensive data pipeline designed to capture and store the real-time coordinates of the International Space Station (ISS). This project involves extracting data from an open API, transforming it into a usable format, and loading it into a CSV file for further analysis. Here's a detailed breakdown:
 
-This project is an ETL (Extract, Transform, Load) pipeline designed to track and store the real-time coordinates of the International Space Station (ISS). By utilizing an open API, this pipeline extracts the ISS's current latitude and longitude, transforms the data by converting the timestamp to Indian Standard Time (IST), and loads it into a CSV file. The entire process is automated using Apache Airflow, making it a robust and reliable solution for continuous data collection.
+### Objectives
 
-## Project Structure
+- **Real-Time Data Collection**: Continuously gather the current location of the ISS from an accessible API.
+- **Data Transformation**: Convert the timestamp from UTC to Indian Standard Time (IST) to match local time zones.
+- **Data Storage**: Efficiently store the data in a CSV file, enabling historical tracking and analysis of the ISS's path over time.
 
-- **DAG (Directed Acyclic Graph)**: Orchestrates the scheduling and execution of the ETL pipeline.
-- **Python Script**: Contains the logic for data extraction, transformation, and loading.
-- **Bash Script**: Acts as a wrapper to execute the Python script within the Airflow DAG.
+### Components
 
-## Prerequisites
+1. **Airflow DAG (`iss_etl_dag.py`)**:
+   - **Purpose**: Orchestrates the ETL (Extract, Transform, Load) process using Apache Airflow.
+   - **Functionality**: Schedules the ETL job to run every 5 minutes, automating the data collection process.
+   - **Implementation**: Uses a `BashOperator` to execute a wrapper script that runs the Python ETL script.
 
-Before running this project, ensure that the following are installed and configured:
-
-- **Python 3.x**
-- **Apache Airflow**
-- **Basic knowledge of shell scripting**
-
-## Files in the Repository
-
-1. **`iss_etl_dag.py`**
-   - This file defines the Airflow DAG for scheduling the ETL job.
-   - The DAG is set to run every 5 minutes and triggers the ETL process via a BashOperator.
-
-2. **`iss_etl_script.py`**
-   - This is the core Python script that handles the ETL process.
+2. **Python ETL Script (`iss_etl_script.py`)**:
+   - **Purpose**: Contains the core logic for data extraction, transformation, and loading.
    - **Functions**:
-     - `fetch_iss_data()`: Fetches the ISS location data from the API.
-     - `convert_to_ist(timestamp)`: Converts the UTC timestamp to IST.
-     - `parse_iss_data(obj)`: Extracts and formats the necessary data from the API response.
-     - `write_to_csv(data, csv_file_path)`: Writes the processed data to a CSV file.
-     - `save_iss_data()`: Coordinates the entire process of fetching, transforming, and saving the data.
-   - The script is designed to be run directly and will append new data to the CSV file every time it is executed.
+     - `fetch_iss_data()`: Retrieves ISS location data from the Open Notify API.
+     - `convert_to_ist(timestamp)`: Converts the API's UTC timestamp to IST.
+     - `parse_iss_data(obj)`: Extracts and formats the necessary data (datetime, latitude, longitude).
+     - `write_to_csv(data, csv_file_path)`: Appends the processed data to a CSV file, creating the file if it doesn't exist.
+     - `save_iss_data()`: Coordinates the ETL process, calling the above functions to complete the data handling.
+   - **Usage**: Designed to be executed by Airflow or manually via a Bash script.
 
-3. **`wrapper_script.sh`**
-   - A simple Bash script that runs the Python ETL script.
-   - This script is called by the Airflow DAG to execute the ETL process.
+3. **Bash Wrapper Script (`wrapper_script.sh`)**:
+   - **Purpose**: Provides a simple way to execute the Python ETL script.
+   - **Functionality**: Runs the Python script as a standalone job when called by Airflow or manually.
 
-## Setting Up the Project
+### How It Works
 
-### Step 1: Clone the Repository
+- **Data Extraction**: The Python script fetches the latest ISS location data from the Open Notify API. The data includes the current latitude, longitude, and a timestamp in UTC.
+- **Data Transformation**: The script converts the timestamp from UTC to IST to provide a local time context.
+- **Data Loading**: Transformed data is appended to a CSV file. The CSV file contains columns for datetime, latitude, and longitude, creating a historical record of the ISS’s position.
+- **Automation**: Apache Airflow manages the scheduling and execution of the ETL process, ensuring data is collected and updated every 5 minutes without manual intervention.
 
-```bash
-git clone https://github.com/yourusername/iss_data_etl.git
-cd iss_data_etl
+### Use Cases
 
-### Step 2: Set Up the Virtual Environment (Optional)
+- **Tracking ISS Movement**: Provides a continuous record of the ISS's position for real-time tracking and analysis.
+- **Historical Data Analysis**: Enables the analysis of ISS movement patterns over time, which can be used for educational or research purposes.
+- **Data Visualization**: The collected data can be visualized to understand the ISS's trajectory and its relation to different geographic locations.
 
-It's a good practice to run your projects in a virtual environment to manage dependencies and isolate project-specific packages.
+### Future Enhancements
 
-1. **Create a Virtual Environment**
-
-   Run the following command to create a new virtual environment in the directory `~/python_vi`:
-
-   ```bash
-   python3 -m venv ~/python_vi
+- **Enhanced Data Visualization**: Integrate tools like Matplotlib or Plotly to create visual representations of the ISS's path.
+- **Database Integration**: Implement storage in a relational database for more complex queries and better scalability.
+- **Additional Data Points**: Extend the API calls to include more data, such as velocity or altitude, for a more comprehensive dataset.
